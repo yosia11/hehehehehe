@@ -67,24 +67,32 @@
         bottom: 30px;
         left: 50%;
         transform: translateX(-50%);
-        font-size: clamp(20px, 4vw, 40px);
-        background: rgba(0,0,0,0.4);
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-family: sans-serif;
+        width: 100%;
         text-align: center;
+        font-size: 28px;
+        background: rgba(0,0,0,0.4);
+        padding: 10px;
+        font-family: sans-serif;
         z-index: 1000;
-        white-space: nowrap;
     }
     .random-photo {
         position: absolute;
-        border: 3px solid white;
+        border: none;
         border-radius: 10px;
         width: 200px;
         height: auto;
-        box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
         opacity: 1;
         z-index: 900;
+    }
+    @media (max-width: 768px) {
+        .lyrics {
+            font-size: 20px;
+            padding: 8px;
+        }
+        .random-photo {
+            width: 150px;
+        }
     }
     @keyframes floatUp {
         0% { transform: translateY(0) scale(1); opacity: 1; }
@@ -204,7 +212,6 @@ function showMain() {
     bgMusic.src = "https://ik.imagekit.io/qple93f0pk/Stephen_Sanchez_-_Until_I_Found_You.mp3";
     bgMusic.play();
 
-    // Mulai efek love & kiss
     startLoveKiss();
 
     fetch("https://ik.imagekit.io/qple93f0pk/Stephen_Sanchez_-_Until_I_Found_You.srt?updatedAt=1755163782006")
@@ -227,7 +234,7 @@ function spawnRandomPhoto(fotoList) {
     img.src = fotoList[Math.floor(Math.random()*fotoList.length)];
     img.classList.add("random-photo");
     img.style.left = Math.random() * (window.innerWidth - 200) + "px";
-    img.style.top = Math.random() * (window.innerHeight - 300) + "px"; // Hindari lirik
+    img.style.top = Math.random() * (window.innerHeight - 300) + "px";
     document.body.appendChild(img);
 }
 
@@ -265,19 +272,13 @@ function startLoveKiss() {
         let el = document.createElement("div");
         el.classList.add("love-kiss");
 
-        // Pilih random emoji ❤️ atau 💋
         el.textContent = Math.random() > 0.5 ? "❤️" : "💋";
-
-        // Ukuran acak (20px - 50px)
         let size = Math.floor(Math.random() * 30) + 20;
         el.style.fontSize = size + "px";
 
-        // Posisi acak tapi hindari area lirik
         let posX = Math.random() * (window.innerWidth - 50);
         el.style.left = posX + "px";
-        el.style.bottom = "0px";
 
-        // Durasi animasi acak (2s - 4s)
         let duration = (Math.random() * 2) + 2;
         el.style.animationDuration = duration + "s";
 

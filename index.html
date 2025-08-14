@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surprise untuk Sayang ❤️</title>
+<style>
+    body {
+        margin: 0;
+        font-family: monospace;
+        background-color: black;
+        color: white;
+        text-align: center;
+        overflow: hidden;
+    }
+    .section {
+        display: none;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    .show { display: flex; }
+    pre {
+        background: #111;
+        padding: 20px;
+        border-radius: 10px;
+        color: #0f0;
+        text-align: left;
+        max-width: 90%;
+        overflow: auto;
+        white-space: pre-wrap;
+    }
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+        background: crimson;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    button:disabled {
+        background: gray;
+        cursor: not-allowed;
+    }
+    .countdown {
+        font-size: 200px;
+        font-weight: bold;
+        animation: scaleUp 0.5s ease-in-out;
+    }
+    @keyframes scaleUp {
+        from { transform: scale(0.5); opacity: 0.5; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .lyrics {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(20px, 4vw, 40px);
+        background: rgba(0,0,0,0.4);
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-family: sans-serif;
+        text-align: center;
+        z-index: 1000;
+        white-space: nowrap;
+    }
+    .random-photo {
+        position: absolute;
+        border: 3px solid white;
+        border-radius: 10px;
+        width: clamp(120px, 18vw, 200px);
+        height: auto;
+        box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        transition: opacity 1s ease-in-out, filter 1s ease-in-out;
+        opacity: 0;
+        z-index: 500;
+    }
+    .blurred {
+        filter: blur(5px);
+        z-index: 100;
+    }
+</style>
+</head>
+<body>
+
+<div id="page1" class="section show">
+    <pre id="code-display"></pre>
+    <button id="generateBtn" onclick="startCountdown()" disabled>Generate</button>
+</div>
+
+<div id="page2" class="section">
+    <div class="countdown" id="countdown">3</div>
+    <audio id="tick-sound" src="https://ik.imagekit.io/qple93f0pk/short-beep-countdown-81121.mp3"></audio>
+</div>
+
+<div id="page3" class="section">
+    <h1>Hi sayang ❤️</h1>
+    <button onclick="showMain()">Buka Halaman</button>
+</div>
+
+<div id="page4" class="section">
+    <audio id="bg-music"></audio>
+    <div id="slideshow"></div>
+    <div class="lyrics" id="lyrics"></div>
+</div>
+
+<script>
+let codeText = `// Skrip rahasia untuk seseorang yang spesial 💖
+function sayang() {
+    let nama = "Sayangku";
+    let perasaan = "Bahagia";
+    console.log("Halo " + nama + " ❤️");
+    console.log("Kamu adalah alasan aku " + perasaan + " setiap hari.");
+    
+    let janji = [
+        "Menjagamu selalu",
+        "Membuatmu tersenyum",
+        "Mendukungmu apapun yang terjadi",
+        "Menyayangimu selamanya"
+    ];
+    
+    for (let i = 0; i < janji.length; i++) {
+        console.log("Janji #" + (i+1) + ": " + janji[i]);
+    }
+    
+    let pesan = "Ini cuma untukmu...";
+    console.log(pesan);
+}
+
+sayang();
+
+setTimeout(() => {
+    console.log("Loading perasaan...");
+}, 1000);
+
+setTimeout(() => {
+    console.log("❤️❤️❤️");
+}, 2000);
+
+// Script selesai, klik tombol Generate untuk melanjutkan
+`;
+
+let i = 0;
+function typeCode() {
+    if (i < codeText.length) {
+        document.getElementById("code-display").innerHTML += codeText.charAt(i);
+        i++;
+        setTimeout(typeCode, 20);
+    } else {
+        document.getElementById("generateBtn").disabled = false;
+    }
+}
+typeCode();
+
+function startCountdown() {
+    document.getElementById("page1").classList.remove("show");
+    document.getElementById("page2").classList.add("show");
+    let count = 3;
+    let timer = setInterval(() => {
+        document.getElementById("tick-sound").play();
+        document.getElementById("countdown").innerText = count;
+        document.getElementById("countdown").style.animation = "none";
+        setTimeout(() => {
+            document.getElementById("countdown").style.animation = "scaleUp 0.5s ease-in-out";
+        }, 10);
+        count--;
+        if (count < 0) {
+            clearInterval(timer);
+            document.getElementById("page2").classList.remove("show");
+            document.getElementById("page3").classList.add("show");
+        }
+    }, 1000);
+}
+
+function showMain() {
+    document.getElementById("page3").classList.remove("show");
+    document.getElementById("page4").classList.add("show");
+
+    document.getElementById("page4").style.backgroundImage = 
+        "url('https://ik.imagekit.io/qple93f0pk/IMG-20250724-WA0024.jpg')";
+    document.getElementById("page4").style.backgroundSize = "cover";
+    document.getElementById("page4").style.backgroundPosition = "center";
+
+    let bgMusic = document.getElementById("bg-music");
+    bgMusic.src = "https://ik.imagekit.io/qple93f0pk/Stephen_Sanchez_-_Until_I_Found_You.mp3";
+    bgMusic.play();
+
+    fetch("https://ik.imagekit.io/qple93f0pk/Stephen_Sanchez_-_Until_I_Found_You.srt?updatedAt=1755163782006")
+    .then(res => res.text())
+    .then(srtText => {
+        let lirikData = parseSRT(srtText);
+        syncLyrics(lirikData, bgMusic);
+    });
+
+    let fotoCount = 35;
+    let fotoList = [];
+    for (let i=1; i<=fotoCount; i++) {
+        fotoList.push(`foto/foto${i}.jpg`);
+    }
+    setInterval(() => spawnRandomPhoto(fotoList), 5000);
+}
+
+function spawnRandomPhoto(fotoList) {
+    let img = document.createElement("img");
+    img.src = fotoList[Math.floor(Math.random()*fotoList.length)];
+    img.classList.add("random-photo");
+
+    // Posisi acak
+    let x = Math.random() * (window.innerWidth - 220);
+    let y = Math.random() * (window.innerHeight - 220);
+
+    img.style.left = x + "px";
+    img.style.top = y + "px";
+
+    // Rotasi acak
+    let rotasi = (Math.random() * 30 - 15).toFixed(2);
+    img.style.transform = `rotate(${rotasi}deg)`;
+
+    document.body.appendChild(img);
+
+    // Fade in
+    setTimeout(() => { img.style.opacity = 1; }, 50);
+
+    // Setelah 10 detik jadi blur
+    setTimeout(() => { img.classList.add("blurred"); }, 10000);
+}
+
+function parseSRT(srt) {
+    let pattern = /(\d+)\s+(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})\s+([\s\S]*?)(?=\n\n|\n*$)/g;
+    let result = [];
+    let match;
+    while ((match = pattern.exec(srt)) !== null) {
+        result.push({
+            start: timeToSeconds(match[2]),
+            end: timeToSeconds(match[3]),
+            text: match[4].replace(/\n/g, " ")
+        });
+    }
+    return result;
+}
+
+function timeToSeconds(time) {
+    let [h, m, rest] = time.split(":");
+    let [s, ms] = rest.split(",");
+    return (+h) * 3600 + (+m) * 60 + (+s) + (+ms)/1000;
+}
+
+function syncLyrics(lirikData, audio) {
+    let lyricDiv = document.getElementById("lyrics");
+    setInterval(() => {
+        let currentTime = audio.currentTime;
+        let currentLine = lirikData.find(l => currentTime >= l.start && currentTime <= l.end);
+        lyricDiv.innerText = currentLine ? currentLine.text : "";
+    }, 200);
+}
+</script>
+
+</body>
+</html>

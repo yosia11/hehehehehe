@@ -20,7 +20,9 @@
         align-items: center;
         flex-direction: column;
     }
-    .show { display: flex; }
+    .show {
+        display: flex;
+    }
     pre {
         background: #111;
         padding: 20px;
@@ -54,6 +56,12 @@
         from { transform: scale(0.5); opacity: 0.5; }
         to { transform: scale(1); opacity: 1; }
     }
+    #slideshow {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
     .lyrics {
         position: fixed;
         bottom: 30px;
@@ -72,16 +80,23 @@
         position: absolute;
         border: 3px solid white;
         border-radius: 10px;
-        width: clamp(120px, 18vw, 200px);
+        width: 200px;
         height: auto;
         box-shadow: 0 0 10px rgba(255,255,255,0.5);
-        transition: opacity 1s ease-in-out, filter 1s ease-in-out;
-        opacity: 0;
-        z-index: 500;
+        opacity: 1;
+        z-index: 900;
     }
-    .blurred {
-        filter: blur(5px);
-        z-index: 100;
+    @keyframes floatUp {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        100% { transform: translateY(-250px) scale(1.5); opacity: 0; }
+    }
+    .love-kiss {
+        position: fixed;
+        bottom: 0;
+        animation: floatUp 3s ease-out forwards;
+        pointer-events: none;
+        z-index: 999;
+        user-select: none;
     }
 </style>
 </head>
@@ -189,6 +204,9 @@ function showMain() {
     bgMusic.src = "https://ik.imagekit.io/qple93f0pk/Stephen_Sanchez_-_Until_I_Found_You.mp3";
     bgMusic.play();
 
+    // Mulai efek love & kiss
+    startLoveKiss();
+
     fetch("https://ik.imagekit.io/qple93f0pk/Stephen_Sanchez_-_Until_I_Found_You.srt?updatedAt=1755163782006")
     .then(res => res.text())
     .then(srtText => {
@@ -208,25 +226,9 @@ function spawnRandomPhoto(fotoList) {
     let img = document.createElement("img");
     img.src = fotoList[Math.floor(Math.random()*fotoList.length)];
     img.classList.add("random-photo");
-
-    // Posisi acak
-    let x = Math.random() * (window.innerWidth - 220);
-    let y = Math.random() * (window.innerHeight - 220);
-
-    img.style.left = x + "px";
-    img.style.top = y + "px";
-
-    // Rotasi acak
-    let rotasi = (Math.random() * 30 - 15).toFixed(2);
-    img.style.transform = `rotate(${rotasi}deg)`;
-
+    img.style.left = Math.random() * (window.innerWidth - 200) + "px";
+    img.style.top = Math.random() * (window.innerHeight - 300) + "px"; // Hindari lirik
     document.body.appendChild(img);
-
-    // Fade in
-    setTimeout(() => { img.style.opacity = 1; }, 50);
-
-    // Setelah 10 detik jadi blur
-    setTimeout(() => { img.classList.add("blurred"); }, 10000);
 }
 
 function parseSRT(srt) {
@@ -256,6 +258,32 @@ function syncLyrics(lirikData, audio) {
         let currentLine = lirikData.find(l => currentTime >= l.start && currentTime <= l.end);
         lyricDiv.innerText = currentLine ? currentLine.text : "";
     }, 200);
+}
+
+function startLoveKiss() {
+    setInterval(() => {
+        let el = document.createElement("div");
+        el.classList.add("love-kiss");
+
+        // Pilih random emoji ❤️ atau 💋
+        el.textContent = Math.random() > 0.5 ? "❤️" : "💋";
+
+        // Ukuran acak (20px - 50px)
+        let size = Math.floor(Math.random() * 30) + 20;
+        el.style.fontSize = size + "px";
+
+        // Posisi acak tapi hindari area lirik
+        let posX = Math.random() * (window.innerWidth - 50);
+        el.style.left = posX + "px";
+        el.style.bottom = "0px";
+
+        // Durasi animasi acak (2s - 4s)
+        let duration = (Math.random() * 2) + 2;
+        el.style.animationDuration = duration + "s";
+
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), duration * 1000);
+    }, 500);
 }
 </script>
 

@@ -230,9 +230,15 @@ function showMain() {
         fotoList.push(`foto/foto${i}.jpg`);
     }
 
-    setInterval(() => {
+    let spawnDelay = 3000;
+    let spawnCounter = 0;
+    function spawnLoop() {
         spawnRandomPhoto(fotoList);
-    }, 5000);
+        spawnCounter++;
+        if (spawnCounter === 5) spawnDelay = 5000;
+        setTimeout(spawnLoop, spawnDelay);
+    }
+    spawnLoop();
 }
 
 let fotoIndexShuffle = [];
@@ -243,40 +249,53 @@ function spawnRandomPhoto(fotoList) {
         fotoIndexShuffle = [...Array(fotoList.length).keys()]
             .sort(() => Math.random() - 0.5);
     }
-    let idx = fotoIndexShuffle.shift();
-    let img = document.createElement("img");
-    img.src = fotoList[idx];
-    img.classList.add("random-photo");
+    for (let i = 0; i < 2; i++) {
+        if (fotoIndexShuffle.length === 0) {
+            fotoIndexShuffle = [...Array(fotoList.length).keys()]
+                .sort(() => Math.random() - 0.5);
+        }
+        let idx = fotoIndexShuffle.shift();
+        let img = document.createElement("img");
+        img.src = fotoList[idx];
+        img.classList.add("random-photo");
 
-    let size = Math.floor(Math.random() * (250 - 120 + 1)) + 120;
-    img.style.width = size + "px";
+        let maxSize = window.innerWidth < 768 ? 160 : 220;
+        let minSize = window.innerWidth < 768 ? 100 : 140;
+        let size = Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
+        img.style.width = size + "px";
 
-    let posLeft, posTop, attempts = 0;
-    do {
-        posLeft = Math.random() * (window.innerWidth - size);
-        posTop = Math.random() * (window.innerHeight - size - 100);
-        attempts++;
-    } while (checkOverlap(posLeft, posTop, size) && attempts < 20);
+        let posLeft, posTop, attempts = 0;
+        do {
+            posLeft = Math.random() * (window.innerWidth - size - 20);
+            posTop = Math.random() * (window.innerHeight - size - 150);
+            attempts++;
+        } while (checkOverlap(posLeft, posTop, size) && attempts < 50);
 
-    img.style.left = posLeft + "px";
-    img.style.top = posTop + "px";
+        img.style.left = posLeft + "px";
+        img.style.top = posTop + "px";
 
-    let rotasi = (Math.random() * 30 - 15) + "deg";
-    img.style.setProperty("--rotasi", rotasi);
+        let rotasi = (Math.random() * 30 - 15) + "deg";
+        img.style.setProperty("--rotasi", rotasi);
 
-    document.body.appendChild(img);
-    activePhotos.push({ left: posLeft, top: posTop, size: size });
+        document.body.appendChild(img);
+        activePhotos.push({ left: posLeft, top: posTop, size: size });
 
-    setTimeout(() => {
-        img.remove();
-        activePhotos = activePhotos.filter(p => !(p.left === posLeft && p.top === posTop));
-    }, 6000);
+        setTimeout(() => {
+            img.remove();
+            activePhotos = activePhotos.filter(p => !(p.left === posLeft && p.top === posTop && p.size === size));
+        }, 6000);
+    }
 }
 
 function checkOverlap(left, top, size) {
     return activePhotos.some(p => {
-        return !(left + size < p.left || left > p.left + p.size ||
-                 top + size < p.top || top > p.top + p.size);
+        let padding = 10;
+        return !(
+            left + size + padding < p.left ||
+            left > p.left + p.size + padding ||
+            top + size + padding < p.top ||
+            top > p.top + p.size + padding
+        );
     });
 }
 

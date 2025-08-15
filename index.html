@@ -82,13 +82,13 @@
         box-shadow: 0 0 10px rgba(0,0,0,0.5);
         opacity: 0;
         z-index: 900;
-        animation: fadeInOut 5s ease-in-out forwards, floatWiggle 3s ease-in-out infinite;
+        animation: photoFloatFade 6s ease-in-out forwards, floatWiggle 3s ease-in-out infinite;
     }
-    @keyframes fadeInOut {
-        0% { opacity: 0; }
-        15% { opacity: 1; }
-        85% { opacity: 1; }
-        100% { opacity: 0; }
+    @keyframes photoFloatFade {
+        0% { opacity: 0; transform: translateY(20px) scale(0.9) rotate(var(--rotasi)); }
+        15% { opacity: 1; transform: translateY(0) scale(1) rotate(var(--rotasi)); }
+        85% { opacity: 1; transform: translateY(-10px) scale(1.05) rotate(var(--rotasi)); }
+        100% { opacity: 0; transform: translateY(-50px) scale(1.1) rotate(var(--rotasi)); }
     }
     @keyframes floatUp {
         0% { transform: translateY(0) scale(1); opacity: 1; }
@@ -270,7 +270,7 @@ function spawnRandomPhoto(fotoList) {
     setTimeout(() => {
         img.remove();
         activePhotos = activePhotos.filter(p => !(p.left === posLeft && p.top === posTop));
-    }, 5000);
+    }, 6000);
 }
 
 function checkOverlap(left, top, size) {

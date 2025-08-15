@@ -56,12 +56,6 @@
         from { transform: scale(0.5); opacity: 0.5; }
         to { transform: scale(1); opacity: 1; }
     }
-    #slideshow {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-    }
     .lyrics {
         position: fixed;
         bottom: 30px;
@@ -75,24 +69,26 @@
         font-family: sans-serif;
         z-index: 1000;
     }
-    .random-photo {
-        position: absolute;
-        border: none;
-        border-radius: 10px;
-        width: 200px;
-        height: auto;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        opacity: 1;
-        z-index: 900;
-    }
     @media (max-width: 768px) {
         .lyrics {
             font-size: 20px;
             padding: 8px;
         }
-        .random-photo {
-            width: 150px;
-        }
+    }
+    .random-photo {
+        position: absolute;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        opacity: 0;
+        z-index: 900;
+        animation: fadeInOut 5s ease-in-out forwards, floatWiggle 3s ease-in-out infinite;
+    }
+    @keyframes fadeInOut {
+        0% { opacity: 0; }
+        15% { opacity: 1; }
+        85% { opacity: 1; }
+        100% { opacity: 0; }
     }
     @keyframes floatUp {
         0% { transform: translateY(0) scale(1); opacity: 1; }
@@ -105,6 +101,13 @@
         pointer-events: none;
         z-index: 999;
         user-select: none;
+    }
+    @keyframes floatWiggle {
+        0% { transform: rotate(var(--rotasi)) translateY(0); }
+        25% { transform: rotate(calc(var(--rotasi) + 2deg)) translateY(-3px); }
+        50% { transform: rotate(var(--rotasi)) translateY(0); }
+        75% { transform: rotate(calc(var(--rotasi) - 2deg)) translateY(3px); }
+        100% { transform: rotate(var(--rotasi)) translateY(0); }
     }
 </style>
 </head>
@@ -223,19 +226,58 @@ function showMain() {
 
     let fotoCount = 35;
     let fotoList = [];
-    for (let i=1; i<=fotoCount; i++) {
+    for (let i = 1; i <= fotoCount; i++) {
         fotoList.push(`foto/foto${i}.jpg`);
     }
-    setInterval(() => spawnRandomPhoto(fotoList), 5000);
+
+    setInterval(() => {
+        spawnRandomPhoto(fotoList);
+    }, 5000);
 }
 
+let fotoIndexShuffle = [];
+let activePhotos = [];
+
 function spawnRandomPhoto(fotoList) {
+    if (fotoIndexShuffle.length === 0) {
+        fotoIndexShuffle = [...Array(fotoList.length).keys()]
+            .sort(() => Math.random() - 0.5);
+    }
+    let idx = fotoIndexShuffle.shift();
     let img = document.createElement("img");
-    img.src = fotoList[Math.floor(Math.random()*fotoList.length)];
+    img.src = fotoList[idx];
     img.classList.add("random-photo");
-    img.style.left = Math.random() * (window.innerWidth - 200) + "px";
-    img.style.top = Math.random() * (window.innerHeight - 300) + "px";
+
+    let size = Math.floor(Math.random() * (250 - 120 + 1)) + 120;
+    img.style.width = size + "px";
+
+    let posLeft, posTop, attempts = 0;
+    do {
+        posLeft = Math.random() * (window.innerWidth - size);
+        posTop = Math.random() * (window.innerHeight - size - 100);
+        attempts++;
+    } while (checkOverlap(posLeft, posTop, size) && attempts < 20);
+
+    img.style.left = posLeft + "px";
+    img.style.top = posTop + "px";
+
+    let rotasi = (Math.random() * 30 - 15) + "deg";
+    img.style.setProperty("--rotasi", rotasi);
+
     document.body.appendChild(img);
+    activePhotos.push({ left: posLeft, top: posTop, size: size });
+
+    setTimeout(() => {
+        img.remove();
+        activePhotos = activePhotos.filter(p => !(p.left === posLeft && p.top === posTop));
+    }, 5000);
+}
+
+function checkOverlap(left, top, size) {
+    return activePhotos.some(p => {
+        return !(left + size < p.left || left > p.left + p.size ||
+                 top + size < p.top || top > p.top + p.size);
+    });
 }
 
 function parseSRT(srt) {
@@ -271,17 +313,13 @@ function startLoveKiss() {
     setInterval(() => {
         let el = document.createElement("div");
         el.classList.add("love-kiss");
-
         el.textContent = Math.random() > 0.5 ? "❤️" : "💋";
         let size = Math.floor(Math.random() * 30) + 20;
         el.style.fontSize = size + "px";
-
         let posX = Math.random() * (window.innerWidth - 50);
         el.style.left = posX + "px";
-
         let duration = (Math.random() * 2) + 2;
         el.style.animationDuration = duration + "s";
-
         document.body.appendChild(el);
         setTimeout(() => el.remove(), duration * 1000);
     }, 500);
